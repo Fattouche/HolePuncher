@@ -1,0 +1,9 @@
+[package]
+name = "Holepuncher"
+version = "0.1.0"
+authors = ["fattouche <alex.fattouche@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+laminar = "0.3.0"
+crossbeam-channel = "0.3"
