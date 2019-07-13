@@ -7,8 +7,15 @@ fn main() -> Result<()> {
     let private_ip = String::from("127.0.0.1:9000");
     let public_ip = String::from("127.0.0.1:9001");
     let is_sender = true;
-    let (sender,reciever) = connect::connect(&socket, private_ip, public_ip);
-    transfer_file(sender, reciever, is_sender);
+    if is_sender{
+        let (sender,addr) = connect::connect_as_sender(&socket, private_ip, public_ip);
+        send_file(sender, addr);
+    }else{
+        let (reciever,addr) = connect::connect_as_reciever(&socket, private_ip, public_ip);
+        recieve_file(sender, reciever, is_sender);
+    }
+    
+    
     Ok(())
 }
 
