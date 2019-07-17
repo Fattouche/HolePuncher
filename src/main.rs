@@ -1,6 +1,8 @@
 use crossbeam_channel::{Receiver, Sender};
 use laminar::{Packet, Result, Socket, SocketEvent};
 use std::env;
+use std::fs::File;
+use std::io::{BufRead, BufReader, Read};
 use std::net::SocketAddr;
 use std::thread;
 mod connect;
@@ -32,6 +34,15 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn send_file(filename: String, sender: Sender<Packet>, addr: SocketAddr) {}
+fn send_file(filename: String, sender: Sender<Packet>, addr: SocketAddr) {
+    let f = File::open(filename).expect("Unable to open file");
+    let f = BufReader::new(f);
+    let mut buffer = [0; 1024];
+    for data in f.lines() {
+        let data = data.expect("Unable to read data");
+        let packet = Packet::reliable_sequenced(addr, data.into_bytes(), None);
+        sender.send(packet).unwrap();
+    }
+}
 
 fn recieve_file(filename: String, reciever: Receiver<SocketEvent>, addr: SocketAddr) {}
