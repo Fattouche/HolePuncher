@@ -26,28 +26,27 @@ fn hole_punch(
     let (channel_sender, channel_reciever) = mpsc::channel();
     //one thread to recieve packets, main thread to send
     let local_event_reciever = event_receiver.clone();
-    let thread = thread::spawn(move || {
+    thread::spawn(move || {
         let result = local_event_reciever.recv_timeout(time::Duration::from_millis(5000));
         if result.is_err() {
-            channel_sender.send(0);
+            channel_sender.send(0).unwrap();
         }
         match result {
             Ok(socket_event) => {
                 match socket_event {
                     SocketEvent::Packet(packet) => {
                         let endpoint: SocketAddr = packet.addr();
-                        let received_data: &[u8] = packet.payload();
                         if endpoint == addr {
                             //We actually got the udp packet from the other side
-                            channel_sender.send(1);
+                            channel_sender.send(1).unwrap();
+                            println!("Connected to {:?}", endpoint);
                         }
                     }
-                    SocketEvent::Connect(connect_event) => { /* a client connected */ }
-                    SocketEvent::Timeout(timeout_event) => { /* a client timed out */ }
+                    _ => println!("Unknown error"),
                 }
             }
             Err(e) => {
-                println!("Something went wrong when receiving, error: {:?}", e);
+                println!("Could not succesfully holepunch, returning private IP");
             }
         }
     });
@@ -68,7 +67,7 @@ fn hole_punch(
                     return true;
                 }
             }
-            Err(e) => println!("error reading from channel: {:?}", e),
+            _ => (),
         }
     }
 }
