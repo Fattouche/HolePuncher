@@ -2,7 +2,7 @@ use crossbeam_channel::{Receiver, Sender};
 use laminar::{Packet, Result, Socket, SocketEvent};
 use std::env;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::net::SocketAddr;
 use std::thread;
 mod connect;
@@ -45,4 +45,22 @@ fn send_file(filename: String, sender: Sender<Packet>, addr: SocketAddr) {
     }
 }
 
-fn recieve_file(filename: String, reciever: Receiver<SocketEvent>, addr: SocketAddr) {}
+fn recieve_file(filename: String, reciever: Receiver<SocketEvent>, addr: SocketAddr) {
+    let mut file = File::create(filename).expect("unable to create file");
+    loop {
+        let result = reciever.recv();
+        match result {
+            Ok(socket_event) => match socket_event {
+                SocketEvent::Packet(packet) => {
+                    let received_data: &[u8] = packet.payload();
+                    file.write_all(received_data)
+                        .expect("Failed to write to file");
+                }
+                _ => (),
+            },
+            Err(e) => {
+                println!("Something went wrong when receiving, error: {:?}", e);
+            }
+        }
+    }
+}
