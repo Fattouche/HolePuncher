@@ -4,6 +4,7 @@ use std::net::SocketAddr;
 use std::sync::mpsc;
 use std::{thread, time};
 
+//Facilitates attempting to holepunch, is the only public function in this module
 pub fn connect(
     packet_sender: &Sender<Packet>,
     event_receiver: &Receiver<SocketEvent>,
