@@ -19,6 +19,7 @@ pub fn connect(
     public_addr
 }
 
+// Try to send and recieve packets in order to insert an entry into the NAT
 fn hole_punch(
     addr: SocketAddr,
     packet_sender: &Sender<Packet>,
