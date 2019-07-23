@@ -1,5 +1,6 @@
 use crossbeam_channel::{Receiver, Sender};
 use laminar::{Packet, Socket, SocketEvent};
+use log::info;
 use std::net::SocketAddr;
 use std::sync::mpsc;
 use std::{thread, time};
@@ -41,14 +42,14 @@ fn hole_punch(
                         if endpoint == addr {
                             //We actually got the udp packet from the other side
                             channel_sender.send(1).unwrap();
-                            println!("Connected to {:?}", endpoint);
+                            info!("Connected to {:?}", endpoint);
                         }
                     }
-                    _ => println!("Unknown error"),
+                    _ => info!("Unknown error"),
                 }
             }
             Err(e) => {
-                println!("Could not succesfully holepunch, returning private IP");
+                info!("Could not succesfully holepunch, returning private IP");
             }
         }
     });
