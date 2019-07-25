@@ -36,6 +36,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+//Send the given file to the reciever
 fn send_file(filename: &String, sender: Sender<Packet>, addr: SocketAddr) -> Result<()> {
     let packet = Packet::reliable_sequenced(addr, filename.clone().into_bytes(), None);
     sender.send(packet).unwrap();
@@ -50,6 +51,7 @@ fn send_file(filename: &String, sender: Sender<Packet>, addr: SocketAddr) -> Res
     Ok(())
 }
 
+//After receiving a UDP packet from the sender, listen for a new connection.
 fn recieve_file(reciever: Receiver<SocketEvent>, addr: SocketAddr) -> Result<()> {
     let result = reciever.recv_timeout(time::Duration::from_millis(10000));
     let mut location = String::from("uninitialized");
