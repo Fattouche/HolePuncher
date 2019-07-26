@@ -9,6 +9,7 @@ use std::str;
 use std::{thread, time};
 mod connect;
 
+//Read arguments and start requests
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
     if args.len() != 5 && args.len() != 4 {
